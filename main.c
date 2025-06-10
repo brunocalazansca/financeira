@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct dados{ // Estrutura dos dados pessoais
+struct dados{
     float salario;
     float despesa;
     float credito;
@@ -11,7 +11,7 @@ struct dados{ // Estrutura dos dados pessoais
     char identidade[10];
 };
 
-void crasa(){ //Cabeçalho do sistema
+void logo(){
     printf("   ______            ____  ___   _____ ___ \n");
     printf("  / ____/           / __ \\/   | / ___//   |\n");
     printf(" / /      ______   / /_/ / /| | \\__ \\/ /| |\n");
@@ -19,26 +19,26 @@ void crasa(){ //Cabeçalho do sistema
     printf("\\____/           /_/ |_/_/  |_|____/_/  |_|\n");
 }
 
-void limpar(){ //Limpar tela
-    system("cls");
+void pause() {
+    printf("Pressione Enter para continuar...");
+    getchar();
 }
-void cabecalho(){
-    limpar();
 
+void cabecalho(){
     printf("+--------------------------------------------------------+\n");
     printf("+                                                        +\n");
     printf("+        Bem-Vindo a sua analise de credito!             +\n");
     printf("+                                                        +\n");
     printf("+--------------------------------------------------------+\n");
 }
-void cabecalho_dados(){
+void cabecalhoDados(){
     printf("+--------------------------------------------------------+\n");
     printf("+                                                        +\n");
     printf("+           Preencha o que se pede a seguir!             +\n");
     printf("+                                                        +\n");
     printf("+--------------------------------------------------------+\n");
 }
-void dados_pessoais(){
+void dadosPessoais(){
     printf("+--------------------------------------------------------+\n");
     printf("+                                                        +\n");
     printf("+             Insira os seus dados abaixo!               +\n");
@@ -46,7 +46,7 @@ void dados_pessoais(){
     printf("+--------------------------------------------------------+\n");
 }
 
-void dados_financa() {
+void dadosFinanceiro() {
     printf("+--------------------------------------------------------+\n");
     printf("+                                                        +\n");
     printf("+              Insira o seu os seus dados                +\n");
@@ -55,7 +55,7 @@ void dados_financa() {
     printf("+--------------------------------------------------------+\n");
 }
 
-void analise_credito() {
+void analiseCredito() {
     printf("+--------------------------------------------------------+\n");
     printf("+                                                        +\n");
     printf("+                 Analise de Credito!                    +\n");
@@ -111,13 +111,11 @@ void lerCSV(struct dados pessoa[], int* tamanho){
     if(arquivo == NULL){
         printf("Erro ao abrir o arquivo.\n");
 
-        return -1;
+        return;
     }
 
     char linha[200];
     *tamanho = 0;
-
-    //Ignora a primeira linha, pois é o cabeçalho]
 
     fgets(linha, 200, arquivo);
 
@@ -173,41 +171,6 @@ void lerCSV(struct dados pessoa[], int* tamanho){
     fclose(arquivo);
 }
 
-void imprimirDados(const struct dados pessoa[], int tamanho){//Imprimi na tela todos os dados do arquivo
-    for (int i = 0; i < tamanho; i++) {
-        printf("Nome: %s\n", pessoa[i].nome);
-        printf("CPF: %s\n", pessoa[i].cpf);
-        printf("IDENTIDADE: %s\n", pessoa[i].identidade);
-        printf("SALARIO: %.2f\n", pessoa[i].salario);
-        printf("DESPESAS: %.2f\n", pessoa[i].despesa);
-        printf("CREDITO: %.2f\n\n", pessoa[i].credito);
-
-    }
-
-}
-
-float analise_pronta(float salario, float despesa, float credito){
-
-    credito = salario - despesa;
-
-    if(credito <= 0){
-        printf("Desculpe, mas sua analise nao foi aprovada.\n");
-    }
-    else if(credito > 0){
-        despesa = despesa * 2;
-        if(salario > despesa){
-            printf("Parabens! Sua analise de credito foi aprovada.\n");
-            printf("Voce consegue um credito no valor de ate %.2f.\n", credito);
-        }
-        if(salario <= despesa){
-            printf("Parabens! Sua analise de credito foi aprovada. \n");
-            printf("Voce consegue um credito no valor de ate %.2f.\n", credito);
-        }
-    }
-
-    return credito;
-}
-
 int verificarArquivoVazio (const char *nomeArquivo){ //Verifica o arquivo vasio
     FILE *arquivo = fopen(nomeArquivo, "r");
 
@@ -227,10 +190,41 @@ int verificarArquivoVazio (const char *nomeArquivo){ //Verifica o arquivo vasio
     return 0;  // Arquivo não está vazio
 }
 
+void imprimirDados(const struct dados pessoa[], int tamanho){
+    for (int i = 0; i < tamanho; i++) {
+        printf("Nome: %s\n", pessoa[i].nome);
+        printf("CPF: %s\n", pessoa[i].cpf);
+        printf("Identidade: %s\n", pessoa[i].identidade);
+        printf("Salario: %.2f\n", pessoa[i].salario);
+        printf("Despesas: %.2f\n", pessoa[i].despesa);
+        printf("Credito: %.2f\n\n", pessoa[i].credito);
+    }
+}
+
+float analisePronta(float salario, float despesa, float credito){
+    credito = salario - despesa;
+
+    if(credito <= 0){
+        printf("Desculpe, mas sua analise nao foi aprovada.\n");
+    } else if(credito > 0){
+        despesa = despesa * 2;
+
+        if(salario > despesa){
+            printf("Parabens! Sua analise de credito foi aprovada.\n");
+            printf("Voce consegue um credito no valor de ate %.2f.\n", credito);
+
+        } else if(salario <= despesa){
+            printf("Parabens! Sua analise de credito foi aprovada. \n");
+            printf("Voce consegue um credito no valor de ate %.2f.\n", credito);
+        }
+    }
+    return credito;
+}
 
 void alterarDados(struct dados* pessoa, int tamanho) {
     int i;
-    int num1, num2;
+    int num1;
+    int num2;
     char cpfPesquisado[15];
 
     printf("Insira o CPF do titular: ");
@@ -246,43 +240,38 @@ void alterarDados(struct dados* pessoa, int tamanho) {
             fgets(pessoa[i].nome, sizeof(pessoa[i].nome), stdin);
             pessoa[i].nome[strcspn(pessoa[i].nome, "\n")] = '\0';
 
-            /*printf("Corrigir CPF: ");
-            fgets(pessoa[i].cpf, sizeof(pessoa[i].cpf), stdin);
-            pessoa[i].cpf[strcspn(pessoa[i].cpf, "\n")] = '\0';*/
             const char *nomeArquivo = "Dados.csv";
 
             int num1, num2, repeat = 0;
-            do{
-                //printf("Insira o seu CPF: ");
-                //fgets(pessoa[tamanho].cpf, sizeof(pessoa[tamanho].cpf), stdin);
 
+            do{
                 int vazio = verificarArquivoVazio(nomeArquivo);
 
                 if (vazio == -1) {
                     printf("\nPor favor salve esses dados pelo menos 1 vez para funcionar corretamente.\n");
-                    repeat = 1;  // Sai do loop se ocorreu um erro ao abrir o arquivo
+                    repeat = 1;
                     break;
                 }
 
-                for(int i = 0; i < tamanho; i++){
+                for (int i = 0; i < tamanho; i++){
                     num1 = atoi (pessoa[tamanho].cpf);
                     num2 = atoi (pessoa[i].cpf);
+
                     if (vazio == -1) {
-                        repeat=0;
+                        repeat = 0;
                         break;
-                    }
-                    if(num1 == num2){
+
+                    } else if(num1 == num2){
                         printf("\nO CPF esta cadastrado.\n Insira um CPF valido.\n");
                         repeat = 0;
                         break;
-                    }
-                    else{
+
+                    } else {
                         repeat = 1;
                     }
-
                 }
 
-            }while(repeat == 0);
+            } while(repeat == 0);
 
             printf("Corrigir CPF: ");
             fgets(pessoa[i].cpf, sizeof(pessoa[i].cpf), stdin);
@@ -300,297 +289,280 @@ void alterarDados(struct dados* pessoa, int tamanho) {
             scanf("%f", &pessoa[i].despesa);
             getchar(); // Limpar o buffer de entrada
 
-
-            pessoa[i].credito = analise_pronta(pessoa[i].salario, pessoa[i].despesa, pessoa[i].credito);
+            pessoa[i].credito = analisePronta(pessoa[i].salario, pessoa[i].despesa, pessoa[i].credito);
 
             printf("Dados alterados com sucesso!\n");
             return;
         }
     }
-
     printf("CPF nao encontrado.\n\n");
 }
 
-
-
-int main(){
-
-    cabecalho();
-    cabecalho_dados();
-
-    struct dados pessoa[100]; //Chamada da estrutura
+void efetuarAnalise (struct dados *pessoa, int tamanho) {
     const char *nomeArquivo = "Dados.csv";
+    int cpfAtual;
+    int cpfNovo;
+    int repeat = 0;
+    int analise;
 
-    printf("TECLE ENTER PARA CONTINUAR:\n");
-    while (getchar() != '\n');
+    logo();
+    dadosPessoais();
 
-    limpar();
+    printf("Insira o seu nome: ");
+    fgets(pessoa[tamanho].nome, sizeof(pessoa[tamanho].nome), stdin);
 
-    int op, op2;
-    int tamanho = 0;
-    lerCSV(pessoa, &tamanho); //Chamado da função da leitura do arquivo
+    size_t newlinePos = strcspn(pessoa[tamanho].nome, "\n");
+
+    if (pessoa[tamanho].nome[newlinePos] == '\n') {
+        pessoa[tamanho].nome[newlinePos] = '\0';
+    }
 
     do {
+        printf("Insira o seu CPF: ");
+        fgets(pessoa[tamanho].cpf, sizeof(pessoa[tamanho].cpf), stdin);
 
-        printf("\n\n");
-        crasa();
+        int vazio = verificarArquivoVazio(nomeArquivo);
 
-        printf("\nEscolha:\n\n 1 - Efetuar Analise\n 2 - Listar Cadastros\n 3 - Ler os Dados\n 4 - Corrigir Dados\n 5 - Imprimir creditos positivos\n 6 - Imprimir creditos negativos\n 7 - Sair e Salvar\n\n");
-        printf("Selecione a opcao que deseja: ");
-        scanf("%d", &op2);
-        fflush(stdin);
-        limpar();
+        if (vazio == -1) {
+            printf("\nPor favor, salve esses dados ao menos 1 vez para funcionar corretamente.\n\n");
+            repeat = 1;
+            break;
+        }
 
-        switch (op2) {//Menu de seleção do sistema de análise
+        cpfAtual = atoi(pessoa[tamanho].cpf);
+        repeat = 1;
+
+        for(int i = 0; i < tamanho; i++){
+            cpfNovo = atoi (pessoa[i].cpf);
+
+            if (cpfAtual == cpfNovo) {
+                repeat = 0;
+                break;
+
+            } if (cpfNovo == cpfAtual){
+                printf("\nO CPF inserido ja esta cadastrado.\n Insira um CPF valido.\n\n");
+                repeat = 0;
+                break;
+            }
+        }
+
+    } while (repeat == 0);
+
+    newlinePos = strcspn(pessoa[tamanho].cpf, "\n");
+
+    if (pessoa[tamanho].cpf[newlinePos] == '\n') {
+        pessoa[tamanho].cpf[newlinePos] = '\0';
+    }
+
+    newlinePos = strcspn(pessoa[tamanho].cpf, "\n");
+
+    if (pessoa[tamanho].cpf[newlinePos] == '\n') {
+        pessoa[tamanho].cpf[newlinePos] = '\0';
+    }
+
+    printf("Insira a sua identidade: ");
+
+    fgets(pessoa[tamanho].identidade, sizeof(pessoa[tamanho].identidade), stdin);
+    newlinePos = strcspn(pessoa[tamanho].identidade, "\n");
+
+    if (pessoa[tamanho].identidade[newlinePos] == '\n') {
+        pessoa[tamanho].identidade[newlinePos] = '\0';
+    }
+
+    pause();
+    logo();
+    analiseCredito();
+
+    pause();
+
+    logo();
+    dadosFinanceiro();
+
+    printf("Insira o seu salario:");
+    scanf("%f", &pessoa[tamanho].salario);
+    fflush(stdin);
+
+    printf("Insira as suas despesas mensais: ");
+    scanf("%f", &pessoa[tamanho].despesa);
+    fflush(stdin);
+
+    printf("Se tiver interesse em fazer uma analise de credito, selecione [0] para NAO e [1] para SIM: ");
+    scanf("%d", &analise);
+    fflush(stdin);
+
+    while (analise != 1 && analise != 0) {
+        switch (analise) {
+            case 0:
+                printf("Que bom!! Espero ter ajudado!");
+                break;
 
             case 1:
 
+                logo();
+                analiseCredito();
 
-                crasa();
-                dados_pessoais();
+                printf("Otimo, vamos para a ánalise\n");
 
-                printf("Insira o seu nome: \n");
-                fgets(pessoa[tamanho].nome, sizeof(pessoa[tamanho].nome), stdin);
-
-
-                size_t newlinePos = strcspn(pessoa[tamanho].nome, "\n");//retira a quebra de linha do final da string
-                if (pessoa[tamanho].nome[newlinePos] == '\n') {
-                    pessoa[tamanho].nome[newlinePos] = '\0';
-                }
-
-                const char *nomeArquivo = "Dados.csv";
-
-                int num1, num2, repeat = 0;
-                do{
-                    printf("Insira o seu CPF: \n");
-                    fgets(pessoa[tamanho].cpf, sizeof(pessoa[tamanho].cpf), stdin);
-
-                    int vazio = verificarArquivoVazio(nomeArquivo);
-
-                    if (vazio == -1) {
-                        printf("\nPor favor, salve esses dados ao menos 1 vez para funcionar corretamente.\n\n");
-                        repeat = 1;  // Sai do loop se ocorreu um erro ao abrir o arquivo
-                        break;
-                    }
-
-                    for(int i=0;i<tamanho;i++){
-                        num1 = atoi (pessoa[tamanho].cpf);
-                        num2 = atoi (pessoa[i].cpf);
-                        if (vazio == -1) {
-                            repeat=0;
-                            break;
-                        }
-                        if(num1==num2){
-                            printf("\nO CPF inserido ja esta cadastrado.\n Insira um CPF valido.\n\n");
-                            repeat=0;
-                            break;
-                        }
-                        else{
-                            repeat=1;
-                        }
-
-                    }
-
-                }while(repeat==0);
-                newlinePos = strcspn(pessoa[tamanho].cpf, "\n");
-                if (pessoa[tamanho].cpf[newlinePos] == '\n') {
-                    pessoa[tamanho].cpf[newlinePos] = '\0';
-                }
-                newlinePos = strcspn(pessoa[tamanho].cpf, "\n");
-                if (pessoa[tamanho].cpf[newlinePos] == '\n') {
-                    pessoa[tamanho].cpf[newlinePos] = '\0';
-                }
-
-
-
-                printf("Insira a sua identidade: \n");
-                fgets(pessoa[tamanho].identidade, sizeof(pessoa[tamanho].identidade), stdin);
-
-                newlinePos = strcspn(pessoa[tamanho].identidade, "\n");
-                if (pessoa[tamanho].identidade[newlinePos] == '\n') {
-                    pessoa[tamanho].identidade[newlinePos] = '\0';
-                }
-
-
-                printf("TECLE ENTER PARA CONTINUAR:\n");
                 while (getchar() != '\n');
 
-                limpar();
+                logo();
+                analiseCredito();
 
-                crasa();
-                analise_credito();
+                pessoa[tamanho].credito = analisePronta(pessoa[tamanho].salario, pessoa[tamanho].despesa, pessoa[tamanho].credito);
+                break;
 
-                printf("TECLE ENTER PARA CONTINUAR:\n");
-                while (getchar() != '\n'); //Linha para ir para a proxima linha apenas apos pressionar o enter
-                limpar();
+            default:
+                printf("Insira o valor valido. [0] NAO [1] SIM. \n");
+                scanf("%d", &analise);
+                break;
+        }
+    }
 
-                crasa();
-                dados_financa();
+    if (analise == 1) {
+        logo();
+        pessoa[tamanho].credito = analisePronta(pessoa[tamanho].salario, pessoa[tamanho].despesa, pessoa[tamanho].credito);
 
-                printf("Insira o seu salario abaixo: \n");
-                scanf("%f", &pessoa[tamanho].salario);
-                fflush(stdin);
+        if (pessoa[tamanho].credito <= 0) {
+            printf("O usuario %s esta com score negativo.\n", pessoa[tamanho].nome);
+            tamanho++;
 
-                printf("Insira as suas despesas mensais: \n");
-                scanf("%f", &pessoa[tamanho].despesa);
-                fflush(stdin);
+            pause();
 
+        } else {
+            printf("O usuario %s esta com score positivo.\n", pessoa[tamanho].nome);
+            tamanho++;
 
-                printf("Se tiver interesse em fazer uma analise de credito, selecione [0] para NAO e [1] para SIM: \n");
-                scanf("%d", &op);
-                fflush(stdin);
-                limpar();
+            pause();
+        }
+    }
 
+    if (analise == 0) {
+        printf("Que bom!! Espero ter ajudado!\n");
+        pessoa[tamanho].credito = 0;
 
-                while (op != 1 && op != 0) {//Loop da seleção para selecionar a analise
+        pause();
+    }
+}
 
-                    switch (op) {
+void listarCadastro (struct dados* pessoa, int tamanho) {
+    imprimirDados(pessoa, tamanho);
 
-                        case 0:
-                            printf("Que bom!! Espero ter ajudado!");
+    printf("\n\n");
 
-                            break;
+    pause();
+}
 
-                        case 1:
+void lerDados (struct dados* pessoa, int tamanho) {
+    imprimirDados(pessoa,tamanho);
+    pause();
+}
 
-                            limpar();
-                            crasa();
-                            analise_credito();
-                            printf("Otimo, vamos para a ánalise\n");
+void corrigirDados (struct dados* pessoa, int tamanho) {
+    alterarDados(pessoa, tamanho);
+    pause();
 
-                            while (getchar() != '\n');
+}
 
-                            limpar();
+void imprimirCreditoPositivo (struct dados* pessoa, int tamanho) {
+    imprimirPositivo(pessoa, tamanho);
 
-                            crasa();
-                            analise_credito();
+    pause();
+}
 
-                            pessoa[tamanho].credito = analise_pronta(pessoa[tamanho].salario, pessoa[tamanho].despesa, pessoa[tamanho].credito);
+void imprimirCreditoNegativo (struct dados* pessoa, int tamanho) {
+    imprimirNegativo(pessoa, tamanho);
 
-                            break;
+    pause();
+}
 
-                        default:
-                            printf("Insira o valor valido. [0] NAO [1] SIM. \n");
-                            scanf("%d", &op);
+void sair (struct dados* pessoa, int tamanho) {
+    salvarCSV(pessoa, tamanho);
 
-                            break;
+    printf("\n\n");
 
+    pause();
+}
 
-                    }
-                }
+int main () {
+    cabecalho();
+    cabecalhoDados();
 
-                if (op == 1) {//Chama a função do calculo do crédito
-                    crasa();
-                    pessoa[tamanho].credito = analise_pronta(pessoa[tamanho].salario, pessoa[tamanho].despesa, pessoa[tamanho].credito);
+    struct dados pessoa[100];
+    const char *nomeArquivo = "Dados.csv";
 
-                    if (pessoa[tamanho].credito <= 0) {
+    pause();
 
-                        printf("O usuario %s esta com score negativo.\n", pessoa[tamanho].nome);
+    int op;
+    int tamanho = 0;
 
-                        tamanho++;
+    lerCSV(pessoa, &tamanho);
 
-                        printf("TECLE ENTER PARA CONTINUAR:\n");
-                        while (getchar() != '\n');
+    do {
+        printf("\n\n");
 
-                        limpar();
+        logo();
 
-                        break;
+        printf(""
+           "\nEscolha:\n"
+           "\n 1 - Efetuar Analise"
+           "\n 2 - Listar Cadastros"
+           "\n 3 - Ler os Dados"
+           "\n 4 - Alterar Dados"
+           "\n 5 - Imprimir creditos positivos"
+           "\n 6 - Imprimir creditos negativos"
+           "\n 7 - Sair e Salvar\n\n"
+        );
 
-                    } else {
+        printf("Selecione a opcao que deseja: ");
+        scanf("%d", &op);
 
-                        printf("O usuario %s esta com score positivo.\n", pessoa[tamanho].nome);
+        while (getchar() != '\n');
 
-                        tamanho++;
+        switch (op) {
+            case 1:
 
-                        printf("TECLE ENTER PARA CONTINUAR:\n");
-                        while (getchar() != '\n');
-
-                        limpar();
-
-                        break;
-                    }
-                }
-
-                if (op == 0) {//Caso nao queira a analise, o credito fica zero
-                    printf("Que bom!! Espero ter ajudado!\n");
-
-                    pessoa[tamanho].credito = 0;
-
-                    tamanho++;
-
-
-                    printf("TECLE ENTER PARA CONTINUAR:\n");
-                    while (getchar() != '\n');
-
-                    limpar();
-                    break;
-                }
+                efetuarAnalise(pessoa, tamanho);
+                tamanho++;
 
                 break;
 
-            case 2: //Chama a função para imprimir os dados inseridos
-
-                limpar();
-                imprimirDados(pessoa, tamanho);
-                printf("\n\n");
-                printf("TECLE ENTER PARA CONTINUAR:\n");
-                while (getchar() != '\n');
-                limpar();
+            case 2:
+                listarCadastro(pessoa, tamanho);
+                tamanho++;
 
                 break;
 
-            case 3://Exerce o mesmo do case anterior, mas com o intuito somente para abertura do arquivo
-
-                imprimirDados(pessoa,tamanho);
-
-                printf("TECLE ENTER PARA CONTINUAR:\n");
-                while (getchar() != '\n');
-                limpar();
+            case 3:
+                lerDados(pessoa, tamanho);
+                tamanho++;
 
                 break;
 
-            case 4: //Chama a função para alterar os dados do arquivo
-
+            case 4:
                 alterarDados(pessoa, tamanho);
-                system("pause");
-                printf("TECLE ENTER PARA CONTINUAR:\n");
-                while (getchar() != '\n');
-                limpar();
+                tamanho++;
 
                 break;
 
-            case 5: //Imprimi apenas as pessoas com credito positivo
-
-                imprimirPositivo(pessoa, tamanho);
-
-                printf("TECLE ENTER PARA CONTINUAR:\n");
-                while (getchar() != '\n');
-                limpar();
+            case 5:
+                imprimirCreditoPositivo(pessoa, tamanho);
+                tamanho++;
 
                 break;
 
-            case 6://Imprimi apenas as pessoas com credito negativo ou que nao fizeram a analise
-
-                imprimirNegativo(pessoa, tamanho);
-                printf("TECLE ENTER PARA CONTINUAR:\n");
-                while (getchar() != '\n');
-                limpar();
+            case 6:
+                imprimirCreditoNegativo(pessoa, tamanho);
+                tamanho++;
 
                 break;
 
-            case 7://finaliza o sistema e cria o arquivo e grava os dados dentro dele
-
-                limpar();
-                salvarCSV(pessoa, tamanho);
-                printf("\n\n");
-                printf("TECLE ENTER PARA CONTINUAR:\n");
-                while (getchar() != '\n');
-                limpar();
-
+            case 7:
+                tamanho++;
+                sair(pessoa, tamanho);
                 break;
         }
 
-    }while(op2 != 7);
+    } while (op != 7);
 
     return 0;
 }
